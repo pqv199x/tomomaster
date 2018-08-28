@@ -18,7 +18,11 @@
         "dev": "npm run crawl_dev & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
         "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
         "abis": "node ./abis.js",
-        "coverage": "./node_modules/.bin/solidity-coverage"
+        "coverage": "./node_modules/.bin/solidity-coverage",
+        "electron:start": "electron .",
+        "electron-packager:mac": "electron-packager . tomochain-mac-app --overwrite --platform=darwin --arch=x64 --icon=app/assets/img/icon.icns --prune=true --out=release-builds",
+        "electron-packager:linux": "electron-packager . tomochain-linux-app --overwrite --asar=true --platform=linux --arch=x64 --icon=app/assets/img/icon.png --prune=true --out=release-builds",
+        "electron-packager:win": "electron-packager . tomochain-windows-app --overwrite --asar=true --platform=win32 --arch=x64 --icon=app/assets/img/icon.ico --prune=true --out=release-builds"
     },
     "repository": {
         "type": "git",
@@ -50,6 +54,7 @@
         "vue-toasted": "^1.1.24"
     },
     "devDependencies": {
+        "asar": "^0.14.3",
         "axios": "^0.18.0",
         "babel-core": "^6.26.0",
         "babel-eslint": "^8.2.3",
@@ -61,6 +66,8 @@
         "coveralls": "^3.0.1",
         "cross-env": "^5.0.5",
         "css-loader": "^0.28.11",
+        "electron": "^2.0.8",
+        "electron-packager": "^12.1.1",
         "eslint": "^4.19.1",
         "eslint-config-standard": "^11.0.0",
         "eslint-loader": "^2.0.0",
