@@ -23,7 +23,13 @@ jobs:
       script:
         - npm run electron-packager:mac
         - npm run electron-packager:linux
-
+      deploy:
+        provider: releases
+        skip_cleanup: true
+        api_key: $GH_TOKEN
+        file: 'release-builds'
+        on:
+          tags: false
     - stage: Build and push tomomaster image (untagged)
       services:
         - docker
