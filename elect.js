@@ -11,7 +11,6 @@ function createWindow () {
     )
 
     win.maximize()
-
     // Specify entry point to default entry point of vue.js
     win.loadURL('http://localhost:3000')
 
