@@ -38,6 +38,9 @@ commander
     .option('-dcn, --dc-name <dcName>', 'Name of Datacenter')
     .option('-dcl, --dc-location <dcLocation>', 'Location of Datacenter')
     .option('-hw, --hardware <hardware>', 'Harware Information')
+    .option('-gh, --github <github>', 'Github Information')
+    .option('-lk, --linkedin <linkedin>', 'Linkedin Information')
+    .option('-em, --email <email>', 'Email Information')
     .action(async (id, options) => {
         let set = _.pick(options, ['nodeId', 'hardware'])
         if (typeof options.name === 'string') {

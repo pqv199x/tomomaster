@@ -7,17 +7,17 @@
         "lint": "eslint --cache ./ --ext .vue --ext .js",
         "lint-fix": "eslint --cache ./ --ext .vue --ext .js --fix",
         "nodemon": "./node_modules/.bin/nodemon index.js",
-        "crawl_dev": "./node_modules/.bin/nodemon ./services/crawl.js",
+        "crawl-dev": "./node_modules/.bin/nodemon ./services/crawl.js",
         "start": "node index.js",
         "crawl": "node ./services/crawl.js",
         "webpack": "node ./node_modules/webpack/bin/webpack.js -d --w",
         "test": "./node_modules/.bin/truffle test",
-        "dev": "npm run crawl_dev & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
+        "dev": "npm run crawl-dev & npm run nodemon & cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000",
         "build": "cross-env NODE_ENV=production webpack -p --progress --hide-modules",
         "abis": "node ./abis.js",
         "coverage": "./node_modules/.bin/solidity-coverage",
         "electron:start": "electron .",
-        "dist": "build",
+        "dist": "electron-builder -mwl",
         "electron-packager:mac": "electron-packager . tomochain-mac-app --overwrite --platform=darwin --arch=x64 --icon=app/assets/img/icon.icns --prune=true --out=release-builds",
         "electron-packager:linux": "electron-packager . tomochain-linux-app --overwrite --asar=true --platform=linux --arch=x64 --icon=app/assets/img/icon.png --prune=true --out=release-builds",
         "electron-packager:win": "electron-packager . tomochain-windows-app --overwrite --asar=true --platform=win32 --arch=x64 --icon=app/assets/img/icon.ico --prune=true --out=release-builds"
@@ -37,6 +37,7 @@
         "body-parser": "^1.18.2",
         "commander": "^2.17.1",
         "config": "^1.30.0",
+        "ethereumjs-abi": "^0.6.5",
         "express": "^4.16.3",
         "express-validator": "^5.1.2",
         "highcharts": "^6.1.1",
@@ -49,7 +50,8 @@
         "truffle-contract": "^3.0.5",
         "truffle-hdwallet-provider": "0.0.6",
         "truffle-privatekey-provider": "^0.1.0",
-        "vue-toasted": "^1.1.24"
+        "vue-toasted": "^1.1.24",
+        "websocket": "^1.0.26"
     },
     "devDependencies": {
         "asar": "^0.14.3",
@@ -98,15 +100,23 @@
     },
     "build": {
         "appId": "tomochain",
+        "directories": {
+            "output": "release-builds"
+        },
+        "mac": {
+            "target": "tar.gz",
+            "icon": "./app/assets/img/icon.icns"
+        },
         "win": {
-            "target": "squirrel",
-            "icon": "app/assets/img/icon.ico"
+            "target": "NSIS",
+            "icon": "./app/assets/img/icon.ico"
         },
         "linux": {
             "target": [
                 "AppImage"
             ],
-            "icon": "app/assets/img/icon.png"
+            "icon": "./app/assets/img/icon.png",
+            "category": "Network"
         }
     }
 }
