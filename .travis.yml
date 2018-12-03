@@ -109,8 +109,8 @@ jobs:
 
 stages:
   - name: Lint
-  - name: Test
-  - name: Coverage
+  # - name: Test
+  # - name: Coverage
   - name: Build and push image
   - name: Release desktop application
     if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
