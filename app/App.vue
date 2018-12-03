@@ -61,7 +61,7 @@ export default {
         }
     },
     async updated () {
-        await this.checkNetworkAndLogin1()
+        await this.checkNetworkAndLogin()
     },
     created: async function () {
         let self = this
@@ -70,7 +70,7 @@ export default {
             if (!self.isReady && self.NetworkProvider === 'metamask') {
                 throw Error('Web3 is not properly detected. Have you installed MetaMask extension?')
             }
-            await self.checkNetworkAndLogin1()
+            await self.checkNetworkAndLogin()
         } catch (e) {
             console.log(e)
         }
@@ -101,7 +101,7 @@ export default {
         goPage: function (s) {
             this.$router.push({ path: `/candidate/${s}` })
         },
-        async checkNetworkAndLogin1 () {
+        async checkNetworkAndLogin () {
             setTimeout(async () => {
                 let account
                 try {
