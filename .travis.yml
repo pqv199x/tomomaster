@@ -16,7 +16,7 @@ jobs:
     - stage: Coverage
       script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
 
-      - stage: Release
+      - stage: Release1
       env:
         - ELECTRON_CACHE=$HOME/.cache/electron
         - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
@@ -142,7 +142,7 @@ stages:
   - name: Test
   - name: Coverage
   - name: Build and push image
-  - name: Release
+  - name: Release1
     if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
   - name: Build and push image (tagged)
     if: type != pull_request AND branch =~ ^v AND tag IS present AND repo = tomochain/tomomaster
