@@ -10,11 +10,11 @@ jobs:
       - release-builds
       - $HOME/.cache/electron
       - $HOME/.cache/electron-builder
-    - stage: Lint
-      script: npm run lint
-    - stage: Test
-    - stage: Coverage
-      script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+    # - stage: Lint
+    #   script: npm run lint
+    # - stage: Test
+    # - stage: Coverage
+    #   script: npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
 
     - stage: Release desktop application
       env:
@@ -45,20 +45,19 @@ jobs:
         overwrite: true
         on:
           tags: false
-          all_branches: true
 
-    - stage: Build and push image
-      services:
-        - docker
-      install: skip
-      before_script:
-        - docker build -t tomochain/tomomaster .
-      script:
-        - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
-        - docker tag tomochain/tomomaster tomochain/tomomaster:latest
-        - docker push tomochain/tomomaster:latest
-        - docker tag tomochain/tomomaster tomochain/tomomaster:$TRAVIS_BUILD_ID
-        - docker push tomochain/tomomaster:$TRAVIS_BUILD_ID
+    # - stage: Build and push image
+    #   services:
+    #     - docker
+    #   install: skip
+    #   before_script:
+    #     - docker build -t tomochain/tomomaster .
+    #   script:
+    #     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+    #     - docker tag tomochain/tomomaster tomochain/tomomaster:latest
+    #     - docker push tomochain/tomomaster:latest
+    #     - docker tag tomochain/tomomaster tomochain/tomomaster:$TRAVIS_BUILD_ID
+    #     - docker push tomochain/tomomaster:$TRAVIS_BUILD_ID
 
     - stage: Build and push image (tagged)
       services:
@@ -108,10 +107,10 @@ jobs:
         -  'curl -X POST --data-urlencode "payload={\"channel\": \"#deployments\", \"username\": \"Travis\", \"attachments\":[{\"fallback\":\"[testnet] Deployment failed\",\"pretext\":\"\",\"color\":\"danger\",\"fields\":[{\"title\":\"[testnet] TomoMaster\",\"value\":\"Deployment failed.\",\"short\":false}]}], \"icon_emoji\": \":male-construction-worker:\"}" $SLACK_DEPLOY_URL'
 
 stages:
-  - name: Lint
+  # - name: Lint
   # - name: Test
   # - name: Coverage
-  - name: Build and push image
+  # - name: Build and push image
   - name: Release desktop application
     if: type != pull_request AND branch = master AND tag IS blank AND repo = tomochain/tomomaster
   - name: Build and push image (tagged)
