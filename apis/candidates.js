@@ -642,11 +642,17 @@ router.get('/:candidate/:owner/getRewards', [
         let masternodesRW = []
 
         const total = db.Status.countDocuments({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         })
 
         const epochData = await db.Status.find({
-            candidate: candidate
+            candidate: candidate,
+            epoch: {
+                $lt: currentEpoch - 2
+            }
         }).sort({ epoch: -1 }).limit(limit).skip(skip).lean().exec()
         let masternodesEpochs = []
 
@@ -672,7 +678,9 @@ router.get('/:candidate/:owner/getRewards', [
             masternodesRW = rwData.map((r) => {
                 const mn = masternodes.find(m => m.epoch === r.epoch) || {}
                 r.status = 'MASTERNODE'
-                r.epochCreatedAt = mn.epochCreatedAt
+                if (!r.reward) {
+                    r.rewardTime = mn.epochCreatedAt || ''
+                }
                 if (currentEpoch - r.epoch < 2) {
                     r.masternodeReward = '-'
                     r.signNumber = '-'
@@ -733,12 +741,27 @@ router.put('/update', [
             set['dataCenter.location'] = body.dcLocation
         }
 
+        set['socials.website'] = body.website || ''
+        set['socials.telegram'] = body.telegram || ''
+
         const address = await web3.eth.accounts.recover(message, signedMessage)
 
         if (
             address.toLowerCase() === c.candidate.toLowerCase() ||
             address.toLowerCase() === c.owner.toLowerCase()
         ) {
+            if (c.name) {
+                const currentBlockNumber = await web3.eth.getBlockNumber()
+                const data = set
+                data.candidate = candidate.toLowerCase()
+                data.blockNumber = currentBlockNumber
+
+                await db.History.updateOne({
+                    candidate: candidate.toLowerCase(), blockNumber: currentBlockNumber
+                }, {
+                    $set: data
+                }, { upsert: true })
+            }
             await db.Candidate.updateOne({
                 smartContractAddress: config.get('blockchain.validatorAddress'),
                 candidate: candidate.toLowerCase()
@@ -909,12 +932,27 @@ router.get('/slashed/:epoch', [
     if (!errors.isEmpty()) {
         return next(errors.array())
     }
-
     try {
         let epoch = req.params.epoch
-        const penalty = db.Penalty.findOne({ epoch: epoch })
+        let response = {
+            epoch,
+            penalties: [],
+            networkId: config.get('blockchain.networkId')
+        }
+        let penalty
+        penalty = await db.Penalty.findOne({ epoch: epoch })
+        if (penalty && penalty.penalties.length > 0) {
+            response = penalty
+        } else {
+            penalty = await db.Status.find({ epoch: epoch, status: 'SLASHED' })
+            if (penalty.length > 0) {
+                await Promise.all(penalty.map(p => {
+                    response.penalties.push(p.candidate)
+                }))
+            }
+        }
 
-        return res.json(penalty)
+        return res.json(response)
     } catch (e) {
         return next(e)
     }
