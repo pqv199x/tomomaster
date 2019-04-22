@@ -395,4 +395,37 @@ router.get('/calculatingReward1Day', [], async (req, res, next) => {
     }
 })
 
+router.get('/:voter/updateWatchList', [], async (req, res, next) => {
+    try {
+        const voter = req.params.voter
+        const candidate = req.query.candidate.toLowerCase()
+        const addTo = req.query.addTo
+
+        let whiteList = (await db.WatchList.findOne({ voter: voter }) || {}).whiteList || []
+        let blackList = (await db.WatchList.findOne({ voter: voter }) || {}).blackList || []
+
+        switch (addTo) {
+        case 'whitelist':
+            whiteList.push(candidate)
+            break
+        case 'blacklist':
+            blackList.push(candidate)
+            break
+        default:
+            return next(Error('Wrong type of addTo'))
+        }
+
+        await db.WatchList.updateOne({
+            voter: voter
+        }, {
+            voter: voter,
+            whiteList: whiteList,
+            blackList: blackList
+        }, { upsert: true })
+        return res.send('Done')
+    } catch (error) {
+        return next(error)
+    }
+})
+
 module.exports = router
